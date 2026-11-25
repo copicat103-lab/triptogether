@@ -1,1 +1,380 @@
 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TripTogether</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f7f6;
+  color:#20312b;
+}
+header{
+  background:#1d7460;
+  color:white;
+  padding:25px 20px 30px;
+  border-radius:0 0 25px 25px;
+}
+header h1{margin:0;font-size:28px}
+header p{margin:8px 0 0;opacity:.85}
+main{padding:16px;max-width:600px;margin:auto}
+.card{
+  background:white;
+  padding:18px;
+  margin-bottom:15px;
+  border-radius:18px;
+  box-shadow:0 3px 12px #00000008;
+}
+h2{font-size:19px;margin:0 0 15px}
+input,select,button{
+  width:100%;
+  padding:13px;
+  margin:7px 0;
+  border-radius:12px;
+  font-size:16px;
+}
+input,select{
+  border:1px solid #dce5e1;
+  background:#fff;
+}
+button{
+  border:none;
+  background:#1d7460;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+button.secondary{
+  background:#e8f3ef;
+  color:#1d7460;
+}
+button.danger{
+  background:#fff0ef;
+  color:#bd4d45;
+}
+.row{
+  display:flex;
+  gap:10px;
+}
+.row>*{flex:1;min-width:0}
+.stat{
+  background:#eaf5f1;
+  border-radius:14px;
+  padding:15px;
+  margin-bottom:10px;
+}
+.stat small{color:#657a72}
+.stat strong{display:block;font-size:23px;margin-top:5px}
+.person,.expense{
+  border-bottom:1px solid #edf0ef;
+  padding:12px 0;
+}
+.person:last-child,.expense:last-child{border-bottom:none}
+.person-line{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.person-name{font-weight:bold}
+.balance-positive{color:#1d7460}
+.balance-negative{color:#d15b51}
+.expense-title{font-weight:bold}
+.expense-info{color:#718078;font-size:13px;margin-top:5px}
+.amount{font-weight:bold;font-size:18px}
+.check-list{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:10px 0;
+}
+.check-item{
+  background:#f4f8f6;
+  padding:10px;
+  border-radius:10px;
+  font-size:14px;
+}
+.check-item input{width:auto;margin-right:5px}
+.empty{
+  text-align:center;
+  padding:20px;
+  color:#82918a;
+}
+footer{
+  text-align:center;
+  color:#87948d;
+  font-size:12px;
+  padding:20px;
+}
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>✈️ TripTogether</h1>
+  <p>Путешествуем вместе. Считаем расходы легко.</p>
+</header>
+
+<main>
+
+<div class="card">
+  <h2>🌍 Наша поездка</h2>
+  <input id="tripName" placeholder="Название поездки">
+  <div class="row">
+    <input id="tripDate" type="date">
+    <select id="currency">
+      <option value="₸">₸ Тенге</option>
+      <option value="฿">฿ Бат</option>
+      <option value="$">$ Доллар</option>
+      <option value="€">€ Евро</option>
+      <option value="₽">₽ Рубль</option>
+    </select>
+  </div>
+  <button onclick="saveTrip()">Сохранить поездку</button>
+</div>
+
+<div class="card">
+  <h2>👥 Участники</h2>
+  <div class="row">
+    <input id="personName" placeholder="Имя участника">
+    <button onclick="addPerson()">Добавить</button>
+  </div>
+  <div id="peopleList"></div>
+</div>
+
+<div class="card">
+  <h2>💰 Добавить расход</h2>
+  <input id="expenseTitle" placeholder="Например: ужин, такси, экскурсия">
+  <input id="expenseAmount" type="number" min="0" step="0.01" placeholder="Сумма">
+
+  <label>Кто оплатил?</label>
+  <select id="paidBy"></select>
+
+  <label>Разделить между:</label>
+  <div id="splitList" class="check-list"></div>
+
+  <button onclick="addExpense()">Добавить расход</button>
+</div>
+
+<div class="card">
+  <h2>📊 Общая статистика</h2>
+  <div class="stat">
+    <small>Всего потрачено</small>
+    <strong id="totalSpent">0</strong>
+  </div>
+  <div id="balances"></div>
+</div>
+
+<div class="card">
+  <h2>🧾 История расходов</h2>
+  <div id="expenseList"></div>
+  <button class="secondary" onclick="clearExpenses()">Очистить расходы</button>
+</div>
+
+</main>
+
+<footer>TripTogether • Ваши путешествия, ваши воспоминания ❤️</footer>
+
+<script>
+let data = JSON.parse(localStorage.getItem("tripTogetherData")) || {
+  tripName:"",
+  tripDate:"",
+  currency:"₸",
+  people:[],
+  expenses:[]
+};
+
+function saveData(){
+  localStorage.setItem("tripTogetherData",JSON.stringify(data));
+  render();
+}
+
+function saveTrip(){
+  data.tripName=document.getElementById("tripName").value;
+  data.tripDate=document.getElementById("tripDate").value;
+  data.currency=document.getElementById("currency").value;
+  saveData();
+  alert("Поездка сохранена!");
+}
+
+function addPerson(){
+  const input=document.getElementById("personName");
+  const name=input.value.trim();
+  if(!name)return alert("Введите имя участника");
+  if(data.people.includes(name))return alert("Такой участник уже есть");
+  data.people.push(name);
+  input.value="";
+  saveData();
+}
+
+function removePerson(name){
+  if(data.expenses.some(e=>e.paidBy===name || e.split.includes(name))){
+    return alert("Нельзя удалить участника, у которого есть расходы");
+  }
+  data.people=data.people.filter(p=>p!==name);
+  saveData();
+}
+
+function addExpense(){
+  const title=document.getElementById("expenseTitle").value.trim();
+  const amount=parseFloat(document.getElementById("expenseAmount").value);
+  const paidBy=document.getElementById("paidBy").value;
+  const split=[...document.querySelectorAll(".splitCheckbox:checked")].map(x=>x.value);
+
+  if(!title)return alert("Введите название расхода");
+  if(!amount||amount<=0)return alert("Введите правильную сумму");
+  if(!paidBy)return alert("Добавьте участников");
+  if(split.length===0)return alert("Выберите, между кем разделить расход");
+
+  data.expenses.unshift({
+    id:Date.now(),
+    title,
+    amount,
+    paidBy,
+    split,
+    date:new Date().toLocaleDateString("ru-RU")
+  });
+
+  document.getElementById("expenseTitle").value="";
+  document.getElementById("expenseAmount").value="";
+  saveData();
+}
+
+function deleteExpense(id){
+  if(confirm("Удалить этот расход?")){
+    data.expenses=data.expenses.filter(e=>e.id!==id);
+    saveData();
+  }
+}
+
+function clearExpenses(){
+  if(confirm("Удалить все расходы?")){
+    data.expenses=[];
+    saveData();
+  }
+}
+
+function money(value){
+  return Number(value).toLocaleString("ru-RU",{
+    maximumFractionDigits:2
+  })+" "+data.currency;
+}
+
+function calculateBalances(){
+  const balances={};
+  data.people.forEach(p=>balances[p]=0);
+
+  data.expenses.forEach(e=>{
+    if(!balances.hasOwnProperty(e.paidBy))balances[e.paidBy]=0;
+    balances[e.paidBy]+=e.amount;
+
+    const share=e.amount/e.split.length;
+    e.split.forEach(p=>{
+      if(!balances.hasOwnProperty(p))balances[p]=0;
+      balances[p]-=share;
+    });
+  });
+
+  return balances;
+}
+
+function render(){
+  document.getElementById("tripName").value=data.tripName||"";
+  document.getElementById("tripDate").value=data.tripDate||"";
+  document.getElementById("currency").value=data.currency||"₸";
+
+  const peopleList=document.getElementById("peopleList");
+  peopleList.innerHTML=data.people.length
+    ?data.people.map(p=>`
+      <div class="person">
+        <div class="person-line">
+          <span class="person-name">👤 ${escapeHTML(p)}</span>
+          <button class="danger" style="width:auto;padding:8px"
+            onclick="removePerson('${escapeJS(p)}')">Удалить</button>
+        </div>
+      </div>
+    `).join("")
+    :'<div class="empty">Добавьте участников поездки</div>';
+
+  const paidBy=document.getElementById("paidBy");
+  paidBy.innerHTML=data.people.map(p=>
+    `<option value="${escapeHTML(p)}">${escapeHTML(p)}</option>`
+  ).join("");
+
+  document.getElementById("splitList").innerHTML=data.people.map(p=>
+    `<label class="check-item">
+      <input class="splitCheckbox" type="checkbox"
+      value="${escapeHTML(p)}" checked> ${escapeHTML(p)}
+    </label>`
+  ).join("");
+
+  const total=data.expenses.reduce((s,e)=>s+e.amount,0);
+  document.getElementById("totalSpent").textContent=money(total);
+
+  const balances=calculateBalances();
+  document.getElementById("balances").innerHTML=data.people.map(p=>{
+    const value=balances[p]||0;
+    const cls=value>=0?"balance-positive":"balance-negative";
+    const label=value>0.01?"Получит обратно":
+      value<-0.01?"Должен":"Расчёт завершён";
+    return `
+      <div class="person">
+        <div class="person-line">
+          <span class="person-name">${escapeHTML(p)}</span>
+          <span class="${cls}">${money(value)}</span>
+        </div>
+        <div class="expense-info">${label}</div>
+      </div>
+    `;
+  }).join("")||'<div class="empty">Добавьте участников</div>';
+
+  document.getElementById("expenseList").innerHTML=data.expenses.length
+    ?data.expenses.map(e=>`
+      <div class="expense">
+        <div class="person-line">
+          <div>
+            <div class="expense-title">${escapeHTML(e.title)}</div>
+            <div class="expense-info">
+              Оплатил: ${escapeHTML(e.paidBy)} • ${e.date}
+            </div>
+            <div class="expense-info">
+              Делится: ${e.split.map(escapeHTML).join(", ")}
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="amount">${money(e.amount)}</div>
+            <button class="danger" style="width:auto;padding:7px"
+              onclick="deleteExpense(${e.id})">Удалить</button>
+          </div>
+        </div>
+      </div>
+    `).join("")
+    :'<div class="empty">Расходов пока нет</div>';
+}
+
+function escapeHTML(str){
+  return String(str).replace(/[&<>"']/g,m=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  }[m]));
+}
+
+function escapeJS(str){
+  return String(str).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+}
+
+render();
+</script>
+
+</body>
+</html>
+
