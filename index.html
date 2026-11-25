@@ -2,479 +2,583 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TripTogether</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f7f5;color:#20312b}
-header{background:#1d7460;color:white;padding:28px 20px 32px;border-radius:0 0 30px 30px}
-header h1{margin:0 0 10px;font-size:30px}
-header p{margin:0;font-size:16px;opacity:.9}
-main{max-width:850px;margin:auto;padding:16px}
-.card{background:white;border-radius:22px;padding:20px;margin-bottom:18px;box-shadow:0 3px 14px #00000008}
-h2{font-size:22px;margin:0 0 18px}
-label{display:block;font-size:14px;font-weight:bold;margin:12px 0 6px}
-input,select{width:100%;padding:14px;border:1px solid #d9e2de;border-radius:14px;font-size:16px;background:white;color:#20312b}
-.row{display:flex;gap:10px}
-.row>*{flex:1;min-width:0}
-button{border:0;border-radius:14px;padding:14px 16px;background:#1d7460;color:white;font-size:16px;font-weight:bold;cursor:pointer}
-button.secondary{background:#e8f2ee;color:#1d7460}
-button.danger{background:#fff0ee;color:#b33c32}
-button.small{padding:9px 12px;font-size:13px}
-button:active{opacity:.8}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stat{background:#e8f4ef;padding:16px;border-radius:16px}
-.stat small{display:block;color:#647a71;margin-bottom:6px}
-.stat strong{font-size:22px;color:#1d7460}
-.person,.expense,.category-row,.balance-row{padding:12px 0;border-bottom:1px solid #edf1ef}
-.person:last-child,.expense:last-child{border-bottom:0}
-.flex-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.muted{color:#718078;font-size:13px}
-.check-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.check-item{display:flex;align-items:center;gap:6px;background:#f1f6f4;padding:9px 12px;border-radius:12px;font-size:14px}
-.check-item input{width:auto;padding:0}
-.category-row{display:flex;align-items:center;gap:10px}
-.cat-icon{font-size:22px;width:32px}
-.cat-bar{height:8px;background:#e7efeb;border-radius:10px;overflow:hidden;margin-top:5px}
-.cat-fill{height:100%;background:#1d7460;border-radius:10px}
-.cat-info{flex:1;min-width:0}
-.cat-amount{font-weight:bold}
-.empty{text-align:center;color:#89968f;padding:20px}
-.actions{display:flex;gap:6px}
-.actions button{padding:8px 10px;font-size:12px}
-#settlements{background:#f5f9f7;border-radius:14px;padding:12px}
-.notice{font-size:12px;color:#718078;margin-top:12px}
-@media(max-width:500px){
- header h1{font-size:26px}
- main{padding:12px}
- .card{padding:17px}
- .row{gap:8px}
- button{padding:13px 10px}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f6fa;
+  color:#263246;
 }
+.container{max-width:900px;margin:auto;padding:16px}
+header{
+  background:linear-gradient(135deg,#5969d9,#8295ff);
+  color:white;padding:25px;border-radius:20px;margin-bottom:16px
+}
+h1{margin:0 0 8px}
+.card{
+  background:white;padding:18px;border-radius:16px;
+  margin-bottom:15px;box-shadow:0 2px 10px #00000008
+}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+input,select,button{
+  width:100%;padding:12px;border-radius:10px;
+  border:1px solid #dce1ea;font-size:16px;margin-top:6px
+}
+button{
+  border:none;background:#6577e8;color:white;
+  font-weight:bold;cursor:pointer
+}
+button.secondary{background:#eef0ff;color:#5665d7}
+button.danger{background:#ffecec;color:#d44}
+.stat{
+  background:#eef0ff;border-radius:12px;padding:15px
+}
+.stat strong{font-size:22px;display:block;margin-top:6px}
+.expense{
+  border-bottom:1px solid #eee;padding:12px 0
+}
+.expense:last-child{border:none}
+.small{font-size:13px;color:#7a8495}
+.actions{display:flex;gap:8px;margin-top:8px}
+.actions button{width:auto;padding:8px 12px;font-size:13px}
+.person{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid #eee
+}
+.balance{padding:10px;background:#f7f8fc;border-radius:10px;margin:8px 0}
+.green{color:#15945a}
+.red{color:#d64c4c}
+#rateStatus{font-size:13px;color:#68758a}
 </style>
 </head>
+
 <body>
+<div class="container">
 
 <header>
 <h1>✈️ TripTogether</h1>
-<p>Путешествуем вместе. Считаем расходы легко.</p>
+<p>Общие расходы путешествия</p>
+<div id="tripDates"></div>
 </header>
 
-<main>
-
 <div class="card">
-<h2>🌍 Наша поездка</h2>
-<label>Название поездки</label>
-<input id="tripName" placeholder="Например: Таиланд 2026">
+<h2>⚙️ Настройки поездки</h2>
 
-<div class="row">
+<div class="grid">
 <div>
-<label>Место</label>
-<input id="tripPlace" placeholder="Таиланд">
+<label>Название поездки</label>
+<input id="tripName" value="Thailand Trip">
 </div>
+
 <div>
-<label>Валюта</label>
-<select id="currency">
-<option value="₸">₸ Тенге</option>
-<option value="฿">฿ Бат</option>
-<option value="$">$ Доллар</option>
-<option value="€">€ Евро</option>
-<option value="₽">₽ Рубль</option>
+<label>Основная валюта</label>
+<select id="baseCurrency">
+<option value="KZT">KZT — тенге</option>
 </select>
 </div>
 </div>
 
-<div class="row">
-<div>
-<label>Начало поездки</label>
-<input type="date" id="tripStart">
-</div>
-<div>
-<label>Окончание</label>
-<input type="date" id="tripEnd">
-</div>
-</div>
-
-<button style="width:100%;margin-top:16px" onclick="saveTrip()">💾 Сохранить поездку</button>
+<button onclick="saveSettings()">Сохранить настройки</button>
+<p id="rateStatus">💱 Загружаем курсы валют...</p>
+<button class="secondary" onclick="updateRates()">🔄 Обновить курсы</button>
 </div>
 
 <div class="card">
 <h2>👥 Участники</h2>
-<div class="row">
-<input id="personName" placeholder="Имя участника">
-<button onclick="addPerson()">Добавить</button>
-</div>
 <div id="peopleList"></div>
+
+<div class="grid">
+<div>
+<label>Имя участника</label>
+<input id="personName" placeholder="Например, Муж">
+</div>
+<div>
+<label>&nbsp;</label>
+<button onclick="addPerson()">Добавить участника</button>
+</div>
+</div>
 </div>
 
 <div class="card">
-<h2>💰 Добавить расход</h2>
+<h2>➕ Добавить расход</h2>
+
+<input type="hidden" id="editId">
+
 <label>Название расхода</label>
-<input id="expenseTitle" placeholder="Например: ужин, такси, экскурсия">
+<input id="expenseTitle" placeholder="Например, ужин">
 
-<label>Категория</label>
-<select id="expenseCategory">
-<option value="flight">✈️ Перелёт</option>
-<option value="hotel">🏨 Проживание</option>
-<option value="food">🍜 Еда</option>
-<option value="excursion">🏝️ Экскурсии</option>
-<option value="shopping">🛍️ Покупки</option>
-<option value="gift">🎁 Подарки</option>
-<option value="transport">🚕 Транспорт</option>
-<option value="other">📦 Прочее</option>
-</select>
-
-<div class="row">
+<div class="grid">
 <div>
 <label>Сумма</label>
-<input id="expenseAmount" type="number" min="0" step="0.01" placeholder="0">
+<input id="amount" type="number" min="0" step="0.01" placeholder="2500">
 </div>
+
+<div>
+<label>Валюта</label>
+<select id="currency">
+<option value="THB">THB — тайский бат 🇹🇭</option>
+<option value="KZT">KZT — тенге 🇰🇿</option>
+<option value="USD">USD — доллар 🇺🇸</option>
+<option value="EUR">EUR — евро 🇪🇺</option>
+<option value="RUB">RUB — рубль 🇷🇺</option>
+</select>
+</div>
+
+<div>
+<label>Категория</label>
+<select id="category">
+<option value="✈️ Билеты">✈️ Билеты</option>
+<option value="🏨 Отель">🏨 Отель</option>
+<option value="🍜 Еда">🍜 Еда</option>
+<option value="🎡 Экскурсии">🎡 Экскурсии</option>
+<option value="🛍️ Покупки">🛍️ Покупки</option>
+<option value="🎁 Подарки">🎁 Подарки</option>
+<option value="🚕 Транспорт">🚕 Транспорт</option>
+<option value="📦 Другое">📦 Другое</option>
+</select>
+</div>
+
 <div>
 <label>Дата</label>
-<input id="expenseDate" type="date">
-</div>
+<input id="date" type="date">
 </div>
 
+<div>
 <label>Кто оплатил?</label>
 <select id="paidBy"></select>
+</div>
+</div>
 
 <label>Разделить между</label>
-<div id="splitList" class="check-list"></div>
+<div id="splitPeople"></div>
 
-<button id="expenseSubmit" style="width:100%;margin-top:18px" onclick="addExpense()">➕ Добавить расход</button>
-<button id="cancelEdit" class="secondary" style="width:100%;margin-top:8px;display:none" onclick="cancelEdit()">Отменить редактирование</button>
+<button onclick="saveExpense()" id="saveExpenseButton">Добавить расход</button>
+<button class="secondary" onclick="cancelEdit()" id="cancelButton" style="display:none">
+Отмена редактирования
+</button>
+
+<p id="conversionPreview" class="small"></p>
+</div>
+
+<div class="grid">
+<div class="stat">
+Всего потрачено
+<strong id="total">0 ₸</strong>
+</div>
+
+<div class="stat">
+Количество расходов
+<strong id="count">0</strong>
+</div>
+
+<div class="stat">
+Средний расход
+<strong id="average">0 ₸</strong>
+</div>
+
+<div class="stat">
+Расходов на человека
+<strong id="perPerson">0 ₸</strong>
+</div>
 </div>
 
 <div class="card">
-<h2>📊 Общая статистика</h2>
-<div class="stat-grid">
-<div class="stat">
-<small>Всего потрачено</small>
-<strong id="totalSpent">0</strong>
-</div>
-<div class="stat">
-<small>Расходов</small>
-<strong id="expenseCount">0</strong>
-</div>
-<div class="stat">
-<small>Участников</small>
-<strong id="peopleCount">0</strong>
-</div>
-<div class="stat">
-<small>Средний расход</small>
-<strong id="averageExpense">0</strong>
-</div>
-</div>
-
-<h3>📈 По категориям</h3>
-<div id="categoryStats"></div>
-
-<h3>⚖️ Баланс участников</h3>
+<h2>💰 Баланс участников</h2>
 <div id="balances"></div>
+</div>
 
-<h3>🔄 Кто кому переводит</h3>
+<div class="card">
+<h2>🤝 Кто кому должен</h2>
 <div id="settlements"></div>
 </div>
 
 <div class="card">
-<h2>🧾 История расходов</h2>
-<div id="expenseList"></div>
-<button class="secondary" style="width:100%;margin-top:12px" onclick="exportCSV()">📥 Скачать расходы CSV</button>
-<button class="danger" style="width:100%;margin-top:10px" onclick="clearExpenses()">🗑️ Удалить все расходы</button>
+<h2>📊 Расходы по категориям</h2>
+<div id="categories"></div>
 </div>
 
-<p class="notice">💡 Данные автоматически сохраняются на этом устройстве в браузере. Чтобы не потерять поездку, не очищайте данные браузера.</p>
-</main>
+<div class="card">
+<h2>🧾 История расходов</h2>
+<div id="history"></div>
+<button class="secondary" onclick="exportCSV()">📥 Скачать CSV</button>
+</div>
+
+</div>
 
 <script>
-const categories={
-flight:{name:"Перелёт",icon:"✈️"},
-hotel:{name:"Проживание",icon:"🏨"},
-food:{name:"Еда",icon:"🍜"},
-excursion:{name:"Экскурсии",icon:"🏝️"},
-shopping:{name:"Покупки",icon:"🛍️"},
-gift:{name:"Подарки",icon:"🎁"},
-transport:{name:"Транспорт",icon:"🚕"},
-other:{name:"Прочее",icon:"📦"}
+const KEY="TripTogether_currency_v1";
+
+let data={
+  tripName:"Thailand Trip",
+  base:"KZT",
+  people:[
+    {id:1,name:"Александра"},
+    {id:2,name:"Муж"}
+  ],
+  expenses:[],
+  rates:{KZT:1},
+  rateDate:"",
+  nextId:3
 };
 
-let data=JSON.parse(localStorage.getItem("tripTogetherData")||"null")||{
-trip:{name:"",place:"",currency:"₸",start:"",end:""},
-people:[],
-expenses:[]
-};
-let editingId=null;
-
-function saveData(){
-localStorage.setItem("tripTogetherData",JSON.stringify(data));
-render();
+function load(){
+  const saved=localStorage.getItem(KEY);
+  if(saved){
+    try{data=JSON.parse(saved)}catch(e){}
+  }
+  if(!data.rates)data.rates={KZT:1};
+  if(!data.people)data.people=[];
+  if(!data.expenses)data.expenses=[];
+  if(!data.nextId)data.nextId=Date.now();
+  render();
 }
 
-function money(value){
-return Number(value||0).toLocaleString("ru-RU",{maximumFractionDigits:2})+" "+data.trip.currency;
+function save(){
+  localStorage.setItem(KEY,JSON.stringify(data));
+  render();
 }
 
-function saveTrip(){
-data.trip.name=document.getElementById("tripName").value;
-data.trip.place=document.getElementById("tripPlace").value;
-data.trip.currency=document.getElementById("currency").value;
-data.trip.start=document.getElementById("tripStart").value;
-data.trip.end=document.getElementById("tripEnd").value;
-saveData();
-alert("Поездка сохранена!");
+function money(n){
+  return Number(n||0).toLocaleString("ru-RU",{
+    maximumFractionDigits:2
+  })+" ₸";
+}
+
+function toKZT(amount,currency){
+  const rate=data.rates[currency];
+  if(!rate)return null;
+  return amount/rate;
+}
+
+async function updateRates(){
+  const status=document.getElementById("rateStatus");
+  status.textContent="💱 Загружаем актуальные курсы...";
+
+  try{
+    const response=await fetch("https://open.er-api.com/v6/latest/KZT");
+    const result=await response.json();
+
+    if(result.result!=="success")throw new Error("Курс не получен");
+
+    data.rates=result.rates;
+    data.rates.KZT=1;
+    data.rateDate=result.time_last_update_utc||"";
+    save();
+
+    status.textContent="✅ Курсы обновлены. "+(result.time_last_update_utc||"");
+  }catch(e){
+    status.textContent="⚠️ Не удалось обновить курсы. Используем сохранённые курсы.";
+  }
+
+  preview();
+}
+
+function saveSettings(){
+  data.tripName=document.getElementById("tripName").value;
+  save();
 }
 
 function addPerson(){
-const input=document.getElementById("personName");
-const name=input.value.trim();
-if(!name)return alert("Введите имя участника");
-if(data.people.some(p=>p.name.toLowerCase()===name.toLowerCase()))return alert("Такой участник уже есть");
-data.people.push({id:Date.now()+Math.random(),name});
-input.value="";
-saveData();
+  const name=document.getElementById("personName").value.trim();
+  if(!name)return;
+
+  data.people.push({id:data.nextId++,name});
+  document.getElementById("personName").value="";
+  save();
 }
 
 function removePerson(id){
-if(data.expenses.some(e=>e.paidBy===id||e.split.includes(id))){
-return alert("У участника есть расходы. Сначала удалите или измените связанные расходы.");
-}
-if(!confirm("Удалить участника?"))return;
-data.people=data.people.filter(p=>p.id!==id);
-saveData();
+  if(data.people.length<=1){
+    alert("В поездке должен остаться хотя бы один участник");
+    return;
+  }
+
+  if(data.expenses.some(e=>e.paidBy===id)){
+    alert("Нельзя удалить участника, который уже оплатил расходы.");
+    return;
+  }
+
+  data.people=data.people.filter(p=>p.id!==id);
+  save();
 }
 
 function renderPeople(){
-const list=document.getElementById("peopleList");
-list.innerHTML=data.people.length?data.people.map(p=>`
-<div class="person flex-between">
-<span>👤 ${escapeHTML(p.name)}</span>
-<button class="danger small" onclick="removePerson(${p.id})">Удалить</button>
-</div>`).join(""):`<div class="empty">Добавьте участников поездки</div>`;
+  document.getElementById("peopleList").innerHTML=data.people.map(p=>`
+    <div class="person">
+      <span>${escapeHTML(p.name)}</span>
+      <button class="danger" style="width:auto" onclick="removePerson(${p.id})">Удалить</button>
+    </div>
+  `).join("");
 
-const paid=document.getElementById("paidBy");
-paid.innerHTML=data.people.map(p=>`<option value="${p.id}">${escapeHTML(p.name)}</option>`).join("");
+  const paidBy=document.getElementById("paidBy");
+  paidBy.innerHTML=data.people.map(p=>
+    `<option value="${p.id}">${escapeHTML(p.name)}</option>`
+  ).join("");
 
-const split=document.getElementById("splitList");
-split.innerHTML=data.people.map(p=>`
-<label class="check-item">
-<input type="checkbox" value="${p.id}" class="splitCheck" checked>
-${escapeHTML(p.name)}
-</label>`).join("");
-}
-
-function addExpense(){
-const title=document.getElementById("expenseTitle").value.trim();
-const amount=Number(document.getElementById("expenseAmount").value);
-const category=document.getElementById("expenseCategory").value;
-const paidBy=Number(document.getElementById("paidBy").value);
-const date=document.getElementById("expenseDate").value;
-const split=[...document.querySelectorAll(".splitCheck:checked")].map(c=>Number(c.value));
-
-if(!data.people.length)return alert("Сначала добавьте участников");
-if(!title)return alert("Введите название расхода");
-if(!amount||amount<=0)return alert("Введите корректную сумму");
-if(!paidBy)return alert("Выберите оплатившего");
-if(!split.length)return alert("Выберите участников для разделения");
-
-const expense={
-id:editingId||Date.now()+Math.random(),
-title,amount,category,paidBy,split,date
-};
-
-if(editingId){
-const index=data.expenses.findIndex(e=>e.id===editingId);
-if(index>=0)data.expenses[index]=expense;
-editingId=null;
-document.getElementById("expenseSubmit").textContent="➕ Добавить расход";
-document.getElementById("cancelEdit").style.display="none";
-}else{
-data.expenses.push(expense);
-}
-
-document.getElementById("expenseTitle").value="";
-document.getElementById("expenseAmount").value="";
-document.getElementById("expenseDate").value=new Date().toISOString().slice(0,10);
-document.querySelectorAll(".splitCheck").forEach(c=>c.checked=true);
-saveData();
-}
-
-function editExpense(id){
-const e=data.expenses.find(x=>x.id===id);
-if(!e)return;
-editingId=id;
-document.getElementById("expenseTitle").value=e.title;
-document.getElementById("expenseAmount").value=e.amount;
-document.getElementById("expenseCategory").value=e.category;
-document.getElementById("paidBy").value=e.paidBy;
-document.getElementById("expenseDate").value=e.date||"";
-document.querySelectorAll(".splitCheck").forEach(c=>c.checked=e.split.includes(Number(c.value)));
-document.getElementById("expenseSubmit").textContent="💾 Сохранить изменения";
-document.getElementById("cancelEdit").style.display="block";
-document.querySelector(".card:nth-of-type(3)").scrollIntoView({behavior:"smooth"});
-}
-
-function cancelEdit(){
-editingId=null;
-document.getElementById("expenseTitle").value="";
-document.getElementById("expenseAmount").value="";
-document.getElementById("expenseSubmit").textContent="➕ Добавить расход";
-document.getElementById("cancelEdit").style.display="none";
-document.querySelectorAll(".splitCheck").forEach(c=>c.checked=true);
-}
-
-function deleteExpense(id){
-if(!confirm("Удалить этот расход?"))return;
-data.expenses=data.expenses.filter(e=>e.id!==id);
-if(editingId===id)cancelEdit();
-saveData();
-}
-
-function renderStats(){
-const total=data.expenses.reduce((s,e)=>s+e.amount,0);
-document.getElementById("totalSpent").textContent=money(total);
-document.getElementById("expenseCount").textContent=data.expenses.length;
-document.getElementById("peopleCount").textContent=data.people.length;
-document.getElementById("averageExpense").textContent=money(data.expenses.length?total/data.expenses.length:0);
-
-const sums={};
-Object.keys(categories).forEach(k=>sums[k]=0);
-data.expenses.forEach(e=>sums[e.category]=(sums[e.category]||0)+e.amount);
-
-const stats=document.getElementById("categoryStats");
-stats.innerHTML=Object.keys(categories).filter(k=>sums[k]>0).map(k=>{
-const percent=total?sums[k]/total*100:0;
-return `<div class="category-row">
-<span class="cat-icon">${categories[k].icon}</span>
-<div class="cat-info">
-<div class="flex-between"><span>${categories[k].name}</span><span class="cat-amount">${money(sums[k])}</span></div>
-<div class="cat-bar"><div class="cat-fill" style="width:${percent}%"></div></div>
-<div class="muted">${percent.toFixed(1)}% от всех расходов</div>
-</div>
-`;
-}).join("")||`<div class="empty">Пока нет расходов</div>`;
-
-renderBalances();
-}
-
-function renderBalances(){
-const balances={};
-data.people.forEach(p=>balances[p.id]=0);
-
-data.expenses.forEach(e=>{
-if(!balances.hasOwnProperty(e.paidBy))balances[e.paidBy]=0;
-balances[e.paidBy]+=e.amount;
-const share=e.amount/(e.split.length||1);
-e.split.forEach(id=>{
-if(!balances.hasOwnProperty(id))balances[id]=0;
-balances[id]-=share;
-});
-});
-
-const people=document.getElementById("balances");
-people.innerHTML=data.people.map(p=>{
-const b=balances[p.id]||0;
-return `<div class="balance-row flex-between">
-<span>👤 ${escapeHTML(p.name)}</span>
-<strong style="color:${b>=0?"#1d7460":"#b33c32"}">${b>=0?"+":""}${money(b)}</strong>
-</div>`;
-}).join("")||`<div class="empty">Добавьте участников</div>`;
-
-renderSettlements(balances);
-}
-
-function renderSettlements(balances){
-let creditors=[],debtors=[];
-Object.entries(balances).forEach(([id,b])=>{
-if(b>0.01)creditors.push({id:Number(id),amount:b});
-if(b< -0.01)debtors.push({id:Number(id),amount:-b});
-});
-let result=[];
-creditors.sort((a,b)=>b.amount-a.amount);
-debtors.sort((a,b)=>b.amount-a.amount);
-let i=0,j=0;
-while(i<creditors.length&&j<debtors.length){
-const amount=Math.min(creditors[i].amount,debtors[j].amount);
-if(amount>0.01){
-const from=data.people.find(p=>p.id===debtors[j].id);
-const to=data.people.find(p=>p.id===creditors[i].id);
-if(from&&to)result.push(`${escapeHTML(from.name)} → ${escapeHTML(to.name)}: <strong>${money(amount)}</strong>`);
-}
-creditors[i].amount-=amount;
-debtors[j].amount-=amount;
-if(creditors[i].amount<0.01)i++;
-if(debtors[j].amount<0.01)j++;
-}
-document.getElementById("settlements").innerHTML=result.length?result.map(x=>`<div style="padding:8px 0">${x}</div>`).join(""):`<div class="empty">Все расчёты сбалансированы 🎉</div>`;
-}
-
-function renderExpenses(){
-const list=document.getElementById("expenseList");
-const sorted=[...data.expenses].sort((a,b)=>(b.date||"").localeCompare(a.date||""));
-list.innerHTML=sorted.length?sorted.map(e=>{
-const person=data.people.find(p=>p.id===e.paidBy);
-const cat=categories[e.category]||categories.other;
-return `<div class="expense">
-<div class="flex-between">
-<strong>${cat.icon} ${escapeHTML(e.title)}</strong>
-<strong>${money(e.amount)}</strong>
-</div>
-<div class="muted">${cat.name} · ${e.date||"Дата не указана"} · оплатил: ${escapeHTML(person?person.name:"—")}</div>
-<div class="muted">Делится между: ${e.split.map(id=>data.people.find(p=>p.id===id)?.name||"").filter(Boolean).map(escapeHTML).join(", ")}</div>
-<div class="actions" style="margin-top:8px">
-<button class="secondary" onclick="editExpense(${e.id})">✏️ Изменить</button>
-<button class="danger" onclick="deleteExpense(${e.id})">🗑️ Удалить</button>
-</div>
-</div>`;
-}).join(""):`<div class="empty">Расходов пока нет</div>`;
-}
-
-function clearExpenses(){
-if(!confirm("Удалить ВСЕ расходы?"))return;
-data.expenses=[];
-saveData();
-}
-
-function exportCSV(){
-if(!data.expenses.length)return alert("Нет расходов для экспорта");
-const rows=[["Дата","Название","Категория","Сумма","Кто оплатил","Разделено между"]];
-data.expenses.forEach(e=>{
-const payer=data.people.find(p=>p.id===e.paidBy);
-rows.push([
-e.date||"",
-e.title,
-categories[e.category]?.name||"Прочее",
-e.amount,
-payer?.name||"",
-e.split.map(id=>data.people.find(p=>p.id===id)?.name||"").join(", ")
-]);
-});
-const csv="\uFEFF"+rows.map(row=>row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(";")).join("\n");
-const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
-const url=URL.createObjectURL(blob);
-const a=document.createElement("a");
-a.href=url;
-a.download="TripTogether_expenses.csv";
-a.click();
-URL.revokeObjectURL(url);
+  document.getElementById("splitPeople").innerHTML=data.people.map(p=>`
+    <label style="display:block;padding:8px">
+      <input type="checkbox" class="splitCheck" value="${p.id}" checked style="width:auto">
+      ${escapeHTML(p.name)}
+    </label>
+  `).join("");
 }
 
 function escapeHTML(s){
-return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+  return String(s).replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+function preview(){
+  const amount=Number(document.getElementById("amount").value);
+  const currency=document.getElementById("currency").value;
+  const out=document.getElementById("conversionPreview");
+
+  if(!amount){
+    out.textContent="";
+    return;
+  }
+
+  const converted=toKZT(amount,currency);
+
+  if(converted===null){
+    out.textContent="⚠️ Курс "+currency+" пока не загружен";
+  }else{
+    out.textContent=`≈ ${money(converted)} по текущему курсу`;
+  }
+}
+
+function saveExpense(){
+  const title=document.getElementById("expenseTitle").value.trim();
+  const amount=Number(document.getElementById("amount").value);
+  const currency=document.getElementById("currency").value;
+  const category=document.getElementById("category").value;
+  const date=document.getElementById("date").value;
+  const paidBy=Number(document.getElementById("paidBy").value);
+  const split=[...document.querySelectorAll(".splitCheck:checked")].map(x=>Number(x.value));
+
+  if(!title||!amount||amount<=0||!date||split.length===0){
+    alert("Заполни все поля и выбери участников, между которыми делится расход.");
+    return;
+  }
+
+  const converted=toKZT(amount,currency);
+
+  if(converted===null){
+    alert("Курс валюты не загружен. Нажми «Обновить курсы».");
+    return;
+  }
+
+  const expense={
+    id:document.getElementById("editId").value
+      ?Number(document.getElementById("editId").value)
+      :data.nextId++,
+    title,
+    amount,
+    currency,
+    kzt:converted,
+    category,
+    date,
+    paidBy,
+    split
+  };
+
+  const editId=document.getElementById("editId").value;
+
+  if(editId){
+    data.expenses=data.expenses.map(e=>e.id===Number(editId)?expense:e);
+  }else{
+    data.expenses.push(expense);
+  }
+
+  cancelEdit();
+  save();
+}
+
+function editExpense(id){
+  const e=data.expenses.find(x=>x.id===id);
+  if(!e)return;
+
+  document.getElementById("editId").value=e.id;
+  document.getElementById("expenseTitle").value=e.title;
+  document.getElementById("amount").value=e.amount;
+  document.getElementById("currency").value=e.currency;
+  document.getElementById("category").value=e.category;
+  document.getElementById("date").value=e.date;
+  document.getElementById("paidBy").value=e.paidBy;
+
+  document.querySelectorAll(".splitCheck").forEach(c=>{
+    c.checked=e.split.includes(Number(c.value));
+  });
+
+  document.getElementById("saveExpenseButton").textContent="Сохранить изменения";
+  document.getElementById("cancelButton").style.display="block";
+  preview();
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function cancelEdit(){
+  document.getElementById("editId").value="";
+  document.getElementById("expenseTitle").value="";
+  document.getElementById("amount").value="";
+  document.getElementById("date").value=new Date().toISOString().slice(0,10);
+
+  document.querySelectorAll(".splitCheck").forEach(c=>c.checked=true);
+
+  document.getElementById("saveExpenseButton").textContent="Добавить расход";
+  document.getElementById("cancelButton").style.display="none";
+  document.getElementById("conversionPreview").textContent="";
+}
+
+function deleteExpense(id){
+  if(confirm("Удалить этот расход?")){
+    data.expenses=data.expenses.filter(e=>e.id!==id);
+    save();
+  }
+}
+
+function calculateBalances(){
+  const balance={};
+
+  data.people.forEach(p=>balance[p.id]=0);
+
+  data.expenses.forEach(e=>{
+    balance[e.paidBy]=(balance[e.paidBy]||0)+e.kzt;
+
+    const share=e.kzt/e.split.length;
+
+    e.split.forEach(id=>{
+      balance[id]=(balance[id]||0)-share;
+    });
+  });
+
+  return balance;
+}
+
+function renderBalances(){
+  const balances=calculateBalances();
+
+  document.getElementById("balances").innerHTML=data.people.map(p=>{
+    const b=balances[p.id]||0;
+    return `<div class="balance">
+      <strong>${escapeHTML(p.name)}</strong><br>
+      <span class="${b>=0?"green":"red"}">
+      ${b>=0?"Ему/ей должны: ":"Должен/должна: "}${money(Math.abs(b))}
+      </span>
+    </div>`;
+  }).join("");
+}
+
+function renderSettlements(){
+  const balances=calculateBalances();
+
+  let creditors=[];
+  let debtors=[];
+
+  Object.entries(balances).forEach(([id,b])=>{
+    if(b>0.01)creditors.push({id:Number(id),amount:b});
+    if(b<-0.01)debtors.push({id:Number(id),amount:-b});
+  });
+
+  let result=[];
+
+  while(debtors.length&&creditors.length){
+    const d=debtors[0];
+    const c=creditors[0];
+    const amount=Math.min(d.amount,c.amount);
+
+    const debtor=data.people.find(p=>p.id===d.id);
+    const creditor=data.people.find(p=>p.id===c.id);
+
+    result.push(`${escapeHTML(debtor.name)} → ${escapeHTML(creditor.name)}: <strong>${money(amount)}</strong>`);
+
+    d.amount-=amount;
+    c.amount-=amount;
+
+    if(d.amount<0.01)debtors.shift();
+    if(c.amount<0.01)creditors.shift();
+  }
+
+  document.getElementById("settlements").innerHTML=result.length
+    ?result.map(x=>`<div class="balance">${x}</div>`).join("")
+    :"<p>🎉 Все расчёты уравновешены!</p>";
+}
+
+function renderCategories(){
+  const cats={};
+
+  data.expenses.forEach(e=>{
+    cats[e.category]=(cats[e.category]||0)+e.kzt;
+  });
+
+  const total=data.expenses.reduce((s,e)=>s+e.kzt,0);
+
+  document.getElementById("categories").innerHTML=
+    Object.entries(cats).map(([name,amount])=>{
+      const percent=total?amount/total*100:0;
+      return `<div class="balance">
+        ${name}<br>
+        <strong>${money(amount)}</strong>
+        <div style="background:#eee;height:8px;border-radius:5px;margin-top:8px">
+          <div style="background:#6979e9;width:${percent}%;height:8px;border-radius:5px"></div>
+        </div>
+      </div>`;
+    }).join("")||"<p>Пока расходов нет</p>";
+}
+
+function renderHistory(){
+  const sorted=[...data.expenses].sort((a,b)=>b.date.localeCompare(a.date));
+
+  document.getElementById("history").innerHTML=sorted.map(e=>{
+    const person=data.people.find(p=>p.id===e.paidBy);
+    return `<div class="expense">
+      <strong>${escapeHTML(e.title)}</strong><br>
+      <span>${e.category} • ${e.date}</span><br>
+      <strong>${e.amount.toLocaleString("ru-RU")} ${e.currency}</strong>
+      <span class="small">≈ ${money(e.kzt)}</span><br>
+      <span class="small">Оплатил: ${escapeHTML(person?.name||"")}</span>
+      <div class="actions">
+        <button class="secondary" onclick="editExpense(${e.id})">Редактировать</button>
+        <button class="danger" onclick="deleteExpense(${e.id})">Удалить</button>
+      </div>
+    </div>`;
+  }).join("")||"<p>Расходов пока нет</p>";
 }
 
 function render(){
-document.getElementById("tripName").value=data.trip.name||"";
-document.getElementById("tripPlace").value=data.trip.place||"";
-document.getElementById("currency").value=data.trip.currency||"₸";
-document.getElementById("tripStart").value=data.trip.start||"";
-document.getElementById("tripEnd").value=data.trip.end||"";
-renderPeople();
-renderStats();
-renderExpenses();
+  document.getElementById("tripName").value=data.tripName||"";
+  document.getElementById("tripDates").textContent="";
+  document.getElementById("date").value=
+    document.getElementById("date").value||new Date().toISOString().slice(0,10);
+
+  renderPeople();
+
+  const total=data.expenses.reduce((s,e)=>s+e.kzt,0);
+
+  document.getElementById("total").textContent=money(total);
+  document.getElementById("count").textContent=data.expenses.length;
+  document.getElementById("average").textContent=
+    money(data.expenses.length?total/data.expenses.length:0);
+  document.getElementById("perPerson").textContent=
+    money(data.people.length?total/data.people.length:0);
+
+  renderBalances();
+  renderSettlements();
+  renderCategories();
+  renderHistory();
 }
 
-document.getElementById("expenseDate").value=new Date().toISOString().slice(0,10);
-render();
+document.getElementById("amount").addEventListener("input",preview);
+document.getElementById("currency").addEventListener("change",preview);
+
+load();
+updateRates();
 </script>
 </body>
 </html>
