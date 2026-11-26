@@ -13,8 +13,8 @@
 <div class="modal" id="modal"><div class="modal-box"><div class="modal-head"><h2 id="modalTitle">Добавить место</h2><button class="close" onclick="closeModal()">×</button></div><form id="placeForm"><input type="hidden" id="placeId"><label>Название места *</label><input id="name" required placeholder="Например: красивый пляж"><label>Город / направление *</label><select id="city"></select><label>Фото</label><input id="photo" type="file" accept="image/*"><img id="preview" class="preview"><label>Локация / ссылка на карту</label><input id="location" placeholder="Google Maps, координаты или адрес"><label>Сайт / Instagram / другая ссылка</label><input id="website" placeholder="https://..."><label>Наши заметки</label><textarea id="notes" placeholder="Что хотим увидеть? Что важно? Цена, советы..."></textarea><label>Статус</label><select id="status"><option value="want">❤️ Хочу посетить</option><option value="visited">✓ Мы здесь были!</option></select><button class="save" type="submit">Сохранить место</button></form></div></div>
 <script>
 // ВСТАВЬ СЮДА свой Project URL и Publishable key (не Secret/Service Role key)
-const SUPABASE_URL='PASTE_PROJECT_URL_HERE';
-const SUPABASE_KEY='PASTE_PUBLISHABLE_KEY_HERE';
+const SUPABASE_URL='https://gmjfxdbefckdmiktxnpb.supabase.co/rest/v1/';
+const SUPABASE_KEY='sb_publishable_-RUGcAoS_ZGKpXSSBtAPSQ_0bFeU0Lr';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const initialCities=['Бангкок','Као Лак','Ко Яо Яй','Патонг','Най Харн','Най Янг'];
 let user=null,trip=null,cities=[],places=[],destinationMap={},photoMap={},activeCity='Все',activeFilter='all',editingId=null,currentPhotoFile=null,currentPhotoUrl='';
